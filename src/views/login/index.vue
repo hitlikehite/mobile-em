@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import { login } from '@/api/user'
 export default {
   name: 'loginIndex',
   data () {
@@ -38,11 +38,7 @@ export default {
   methods: {
     async  sendlogin () {
       try {
-        let res = await axios({
-          method: 'POST',
-          url: 'http://toutiao.course.itcast.cn/app/v1_0/authorizations',
-          data: this.form
-        })
+        let res = await login(this.form)
         console.log(res)
         this.$toast('登陆成功')
         this.$router.push({ name: 'home' })
