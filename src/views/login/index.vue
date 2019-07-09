@@ -38,8 +38,8 @@ export default {
   methods: {
     async  sendlogin () {
       try {
-        let res = await login(this.form)
-        console.log(res)
+        let data = await login(this.form)
+        this.$store.commit('setUser', data)
         this.$toast('登陆成功')
         this.$router.push({ name: 'home' })
       } catch (error) {
