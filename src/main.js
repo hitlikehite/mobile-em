@@ -5,6 +5,7 @@ import store from './store'
 import Vant from 'vant'
 import 'amfe-flexible'
 import 'vant/lib/index.css'
+import './styles/index.less'
 
 Vue.use(Vant)
 
