@@ -1,12 +1,17 @@
 import axios from 'axios'
+import store from '@/store'
 
 // 创建一个axios对象，名为request
 const request = axios.create({
-  baseURL: 'http://toutiao.course.itcast.cn'
+  // baseURL: 'http://toutiao.course.itcast.cn'
+  baseURL: 'http://ttapi.research.itcast.cn/'
 })
 
 // 请求拦截器，处理请求数据（请求体）
 request.interceptors.request.use(function (config) {
+  if (store.state.user) {
+    config.headers.Authorization = `Bearer ${store.state.user.token}`
+  }
   return config
 }, function (error) {
   // 有错误在这里输出错误
