@@ -41,16 +41,34 @@
               finished-text="没有更多了"
               @load="onLoad"
             >
+            <!-- 文章列表 -->
               <van-cell
                 v-for="articleItem in channelItem.articles"
-                :key="articleItem.art_id"
-                :title="articleItem.title"
-              />
+                :key="articleItem.art_id  + ''"
+              >
+                <div>
+                  <div>{{ articleItem.title }}</div>
+                  <template v-if="articleItem.cover.type">
+                    <van-grid :border="false" :column-num="3">
+                      <van-grid-item v-for="(itemimg, index) in articleItem.cover.images" :key="index">
+                        <van-image :src="itemimg" height="100" />
+                      </van-grid-item>
+                    </van-grid>
+                  </template>
+                  <div>
+                    <span>{{ articleItem.aut_name }}</span>&nbsp;·&nbsp;
+                    <span>{{ articleItem.comm_count }}</span>&nbsp;·&nbsp;
+                    <span>{{ articleItem.pubdate | relativeTime }}</span>
+                    <span class="operation" @click="moreshowfn(articleItem)"><van-icon name="clear" /></span>
+                  </div>
+                </div>
+              </van-cell>
             </van-list>
           </van-pull-refresh>
         </van-tab>
       </van-tabs>
     </div>
+    <moreAction v-model="moreshow" :articleItem="articleItem" @nolick="nolick(articleItem)" @blockClick="nolick(articleItem)"/>
   </div>
 </template>
 
@@ -58,17 +76,21 @@
 import { getFnChannel } from '@/api/channel'
 import { getFnarticle } from '@/api/article'
 import ChannelsAll from './components/channels'
+import moreAction from './components/more-action'
 
 export default {
   name: 'home',
   components: {
-    ChannelsAll
+    ChannelsAll,
+    moreAction
   },
   data () {
     return {
       active: 0,
       channels: [],
-      isShow: true
+      isShow: false,
+      moreshow: false,
+      articleItem: null
     }
   },
   created () {
@@ -81,10 +103,6 @@ export default {
     }
   },
   methods: {
-    // 频道改变是的状态
-    onChange (name, title) {
-      this.$toast(title)
-    },
 
     // 获取文章数据列表
     async onLoad () {
@@ -181,6 +199,20 @@ export default {
         item.upPullFinished = false // 控制当前频道数据是否加载完毕
       })
       this.channels = data.channels
+    },
+
+    // 点击按钮弹出文章操作
+    moreshowfn (item) {
+      this.moreshow = !this.moreshow
+      this.articleItem = item
+    },
+    // 删除文章
+    nolick (item) {
+      const articles = this.activeChannel.articles
+      const delIndex = articles.findIndex(item => item === this.articleItem)
+      articles.splice(delIndex, 1)
+      this.moreshow = false
+      this.$toast('操作成功')
     }
   }
 }
@@ -205,5 +237,9 @@ export default {
   top: 50px;
   background-color: #fff;
   z-index: 99;
+}
+.operation {
+  float: right;
+  font-size: 30px;
 }
 </style>
